@@ -32,6 +32,32 @@ def record_unknown_question(question):
     return "OK"
 
 
+CHECKLIST_STATUSES = ("pending", "in_progress", "completed")
+
+_checklist = []
+
+
+def get_checklist():
+    return [dict(item) for item in _checklist]
+
+
+def reset_checklist():
+    _checklist.clear()
+
+
+def update_checklist(items):
+    """Replace the whole checklist, like Claude Code's todo list."""
+    cleaned = []
+    for item in items:
+        status = item.get("status")
+        if status not in CHECKLIST_STATUSES:
+            raise ValueError(f"status must be one of {CHECKLIST_STATUSES}, got {status!r}")
+        cleaned.append({"content": item["content"], "status": status})
+    _checklist[:] = cleaned
+    done = sum(1 for item in cleaned if item["status"] == "completed")
+    return f"Checklist updated: {done}/{len(cleaned)} completed"
+
+
 record_user_details_json = {
     "name": "record_user_details",
     "description": "Use this tool to record that a user is interested in being in touch and provided an email address",
@@ -63,14 +89,45 @@ record_unknown_question_json = {
     },
 }
 
+update_checklist_json = {
+    "name": "update_checklist",
+    "description": (
+        "Create or update your checklist for a request that has several parts. "
+        "Send the complete list every time. Keep at most one item in_progress, "
+        "and mark items completed as soon as they are done."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "items": {
+                "type": "array",
+                "description": "The full checklist, in order",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "content": {"type": "string", "description": "A short description of the step"},
+                        "status": {"type": "string", "enum": list(CHECKLIST_STATUSES)},
+                    },
+                    "required": ["content", "status"],
+                    "additionalProperties": False,
+                },
+            },
+        },
+        "required": ["items"],
+        "additionalProperties": False,
+    },
+}
+
 tools = [
     {"type": "function", "function": record_user_details_json},
     {"type": "function", "function": record_unknown_question_json},
+    {"type": "function", "function": update_checklist_json},
 ]
 
 tool_map = {
     "record_user_details": record_user_details,
     "record_unknown_question": record_unknown_question,
+    "update_checklist": update_checklist,
 }
 
 

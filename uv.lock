@@ -296,6 +296,7 @@ dependencies = [
     { name = "pypdf" },
     { name = "python-dotenv" },
     { name = "requests" },
+    { name = "rich" },
 ]
 
 [package.metadata]
@@ -305,6 +306,7 @@ requires-dist = [
     { name = "pypdf", specifier = ">=6.21.4" },
     { name = "python-dotenv", specifier = ">=1.2.4" },
     { name = "requests", specifier = ">=2.34.2" },
+    { name = "rich", specifier = ">=15.0.0" },
 ]
 
 [[package]]
