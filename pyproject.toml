@@ -1,0 +1,11 @@
+[project]
+name = "digital-twin"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "gradio>=6.31.0",
+    "openai>=3.42.1",
+    "pypdf>=6.21.4",
+    "python-dotenv>=1.2.4",
+    "requests>=2.34.2",
+]
